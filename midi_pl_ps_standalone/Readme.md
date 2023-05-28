@@ -48,11 +48,18 @@ TODO
 
 1. Block DiagramのZynq7 Processing Systemをダブルクリック
 
-1. Re-customize IP ZYNQ7 Processing Systemダイアログが表示されるため、PresetsからApply Configurationを選択し、Zynq PresetsのTCL/(Pynqの場合pynq_revC.tcl)を選択しOKを選択してダイアログを閉じます
+1. Re-customize IP ZYNQ7 Processing Systemダイアログが表示されるため、PresetsからApply Configurationを選択し、Zynq PresetsのTCL/(Pynqの場合pynq_revC.tcl)を選択します
 
-1. Blob DiagramのRun Block Automationを選択し表示されたダイアログのOKを押します
+1. Re-customize IP ZYNQ7 Processing SystemダイアログのPage NavigatorからClock Confiugrationを選択し、ComponentのPL Fabric ClocksのFCLK_CLK0のRequested Frequeycn(MHz)を確認してダイアログのOKを押してダイアログを閉じます
 
-1. Blob DiagramのRun Connection Automation が表示されている場合は選択し表示されたダイアログのOKを押します
+1. Blob DiagramのRun Block Automationを選択し表示されたダイアログのOKを押します(Run Block Automationが表示された場合のみ)
+
+1. Blob DiagramのRun Connection Automationが表示されている場合は選択し表示されたダイアログのOKを押します(Run Connection Automationが表示された場合のみ)
+
+1. Block DiagramのClocking Wizardをダブルクリック
+
+1. Clocking OptionsのInput Clock InformatrionのPrimaryのInput Frequency(MHz)が先ほど確認したFCLK_CLK0の周波数と一致しているかを確認します  
+もし、周波数がおかしい場合はAutoからManualに変更し手動でクロックを入力してください。
 
 1. SourcesのDesigne Sourcesからmidi_pl_ps_standaloneを右クリックし、Create HDL Wrapperを選択します
 
@@ -70,6 +77,7 @@ TODO
 1. 右上のウィンドウレイアウトから I/O Planningを選択します
 
 1. I/O Portsタブを開き、各入出力ピンのPackage PinのとI/O Stdを設定します  
+なお、PS関係のピンの設定(DDR_XXXやFIXED_IO_XXXなど)はデフォルトのまま間としてください。  
 例の場合は図のように設定します
 ![](img/02.png) TODO
 
@@ -98,7 +106,7 @@ TODO
 
 1. New Application Projectダイアログが表示されるためNextを選択
 
-1. Create a new plaform fron hardware(XSA)タブをせたくし、BrowseをクリックしてVivadoで生成したxsaファイルを選択
+1. Create a new plaform fron hardware(XSA)タブを選択、BrowseをクリックしてVivadoで生成したxsaファイルを選択
 
 1. New Application ProjectダイアログのNextを選択
 
@@ -110,25 +118,34 @@ TODO
 
 ## C++コード追加とプロジェクト設定
 
-TODO
+1. ExplorerのMain_systemのMainのsrcを右クリックし、Import sourcesを選択
 
-* ビルド設定変更
-Explorer/Main_system/「Main[Application]」を右クリック>「Property」
+1. from directoryの Browseをクリックしcppフォルダーを選択
 
-Properties for Mainダイアログ>「C/C++ Build」>「Settings」>ToolSettingsタブ ARM v7 g++ compiler「Miscellaneous」>「Other flags」に「-std=c++14」を追加
+1. lscript.ldとmain.cppをチェックしFinishを選択
+
+1. 上書きするかと聞かれる場合はYes to allを選択
+
+1. ExplorerのMain_systemのMainを右クリックし、Propertyを選択
+
+1. Properties for MainダイアログのC/C++ BuildからSettingsを選択し、ToolSettingsタブのARM v7 g++ compilerからMiscellaneousを選択し、Other flagsに-std=c++14を追加します
+
+1. Apply and Closeを選択しダイアログを閉じます
 
 
 ## C++プログラムのビルド
 
-
-* アプリケーションプロジェクトをビルド
-「Assistant」>「XXX[Application]」の「Debug」を右クリック>「Build」
-
+1. AssisntantのMain_systemのDebugを右クリックしBuildを選択します
 
 ## 実行設定作成
 
-* RunConfigurationの変更
-「Run」>「Configuration」>「Single Application Debug」>「RUN」
+1. ツールバーのRunのドロップダウンを選択し、Run Configurationを選択
 
+1. Run ConfigurationダイアログのSingle Application DebugをダブルクリックしCloseを選択します
 
 ## 実行
+
+1. シリアル通信が可能なターミナルを起動し、FPGAのUARTに接続します。  
+デフォルトでのボーレートは115200です。
+
+1. ツールバーのRunをクリックし実行します。 この際PLのコンフィギュレーションとPSの初期化・起動が行なわれます。

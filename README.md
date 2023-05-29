@@ -19,8 +19,11 @@
         * midiclock: MIDI信号用クロック生成回路
         * hdl: IP共通コード置き場
         * if: IP間のインターフェース定義
+* cpp: CPU向け共通ライブラリ格納場所
+    * usbps: 標準のZynq向けUSBドライバー(usbps)のバグ修正とC++インターフェース化したもの
 * midi_pl_standalone: FPGA(PL)単体で動作するMIDI IPのサンプル回路 入力されたMIDI信号を改変して出力を行なうサンプルです
 * midi_pl_ps_standalone: FPGA(PL)とCPU(PS)を併用して動作するMIDI IPのサンプル回路とプログラム 入力されたMIDI信号を一定期間遅延させて出力を行なうサンプルです
+
 # 発行物とサンプルの対応表
 
 ## 自作USBオーディオインターフェース #1 USB-MIDIデバイス編

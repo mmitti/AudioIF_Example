@@ -54,7 +54,7 @@ protected:
     XScuGic& IntcInstance; /* The instance of the IRQ Controller */
     MIDIPeripheral &midi_ph;
     u8 Buffer[MEMORY_SIZE] ALIGNMENT_CACHELINE;
-    RingBuffer<MIDI_MESSAGE_BUFFER_SIZE> buffer ALIGNMENT_CACHELINE;
+    RingBuffer<MIDI_MESSAGE_BUFFER_SIZE> outbuffer ALIGNMENT_CACHELINE;
     RingBuffer<MIDI_MESSAGE_BUFFER_SIZE> inbuffer ALIGNMENT_CACHELINE;
 
     usbps::UsbPs UsbInstance;   /* The instance of the USB Controller */

@@ -392,25 +392,79 @@ void USBMidi::stdDeviceRequest(usbps::SetupData &data)
 
 void USBMidi::update()
 {
-    // todo send midi data
+    // receive midi message from PL
+    while(this->midi_ph.arrivedMidiMessage(1)){ 
+		auto d = this->midi_ph.readMidiMessage(1);
+		if(MIDIPeripheral::checkValidMidiMessage(d)){
+			u8 head = MIDIPeripheral::getMidiMessageHead(d);
+
+            if ((head & 0xF0) == 0x80 || (head & 0xF0) == 0x90) {
+                // note on or note off
+                u8 cable_num = 0;
+                // cable num, channel message type
+                inbuffer.writeByte(cable_num << 4 | head >> 4);
+                // raw midi data
+                inbuffer.writeByte(head);
+                inbuffer.writeByte(MIDIPeripheral::getMidiMessageData1(d));
+                inbuffer.writeByte(MIDIPeripheral::getMidiMessageData2(d));
+            }
+		}
+	}
+    // ignore sysex
+	while(this->midi_ph.arrivedSysEx((1))){
+		this->midi_ph.readSysEx(1);
+	}
+    
+    // send midi message to PL
+    while(outbuffer.getLength() >= 4){
+        u8 tmp[4];
+		if (outbuffer.readBuffer(tmp, 4) != 4){
+			DPRINT("error read size\n");
+			continue;
+		}
+		u8 head = tmp[0];
+		u8* data = tmp + 1;
+		u8 cable_num = (head&0xF0)>>4;
+		u8 midi_command = (head&0x0F);
+		if (cable_num != 0) continue;
+
+		switch(midi_command){
+            case 0x08: // NOTE OFF
+            case 0x09: // NOTE ON
+                this->midi_ph.sendMidiMessage(1, data[0], data[1], data[2]);
+                break;
+            default:
+                // ignore other message
+                break;
+		}
+	}
+
+    
+    // enqueue midi send buffer to USB
+    u8 obuf[64];
+    unsigned len = std::min( ((inbuffer.getLength()) >> 2) << 2, (u32)64);
+    if(len > 0)  {
+        inbuffer.readBuffer(obuf, len);
+        auto status = this->sendBuffer(USB_CFG_MIDI_STREAM_EP, obuf, len);
+        if (status != XST_SUCCESS) DPRINT("W: TX FAILED %d\n", status);
+    }
+
 }
 
 void USBMidi::epHandler(u8 endpoint_num, usbps::EndpointEvent event_type, void* data) {
     switch (event_type)
     {
     case usbps::EndpointEvent::DATA_RX:{
-        auto buffer = receiveBuffer(endpoint_num);
+        auto buffer = this->receiveBuffer(endpoint_num);
         if (buffer.length > 0) {
-            // TODO receive midi data
-			// usbMidiEventHandler(buffer.buffer, buffer.length);
+            // euqueue ring buffer
+            this->outbuffer.writeBuffer(buffer.buffer, buffer.length);
 		}
-		releaseBuffer(buffer);
+		this->releaseBuffer(buffer);
 		if(buffer.status != XST_SUCCESS) DPRINT("W: RX FAILED %d\n", buffer.status);
         break;
 	}
     case usbps::EndpointEvent::DATA_TX:
-	
-	
     	break;
     default:
     	DPRINT("W: Unhandled event type %d received on %d\n", event_type, endpoint_num);

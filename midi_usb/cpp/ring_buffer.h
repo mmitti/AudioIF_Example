@@ -6,7 +6,7 @@ private:
     static constexpr u32 MASK = (1 << (u32)N) - 1;
     volatile u8 buffer[MEM_SIZE] ALIGNMENT_CACHELINE;
     volatile u32 start;
-    volatile u32 size; // CS
+    volatile u32 size;
     volatile u32 end;
 public:
     RingBuffer(){

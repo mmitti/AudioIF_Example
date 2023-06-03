@@ -51,13 +51,12 @@
 
 class USBMidi{
 protected:
-    XScuGic& IntcInstance; /* The instance of the IRQ Controller */
+    XScuGic& IntcInstance;
+    usbps::UsbPs UsbInstance;
     MIDIPeripheral &midi_ph;
+    
     u8 Buffer[MEMORY_SIZE] ALIGNMENT_CACHELINE;
     RingBuffer<MIDI_MESSAGE_BUFFER_SIZE> outbuffer ALIGNMENT_CACHELINE;
-    RingBuffer<MIDI_MESSAGE_BUFFER_SIZE> inbuffer ALIGNMENT_CACHELINE;
-
-    usbps::UsbPs UsbInstance;   /* The instance of the USB Controller */
 
     void stdDeviceRequest(usbps::SetupData& data);
     void classRequest(usbps::SetupData& data, u8* in_data);
@@ -69,13 +68,17 @@ public:
     virtual bool init();
     virtual void release();
     void ep0Handler(u8 endpoint_num, usbps::EndpointEvent event_type, void *data);
+    void intrHandler(u32 mask);
+    // usb midi proc
+    void epHandler(u8 endpoint_num, usbps::EndpointEvent event_type, void *data);
+    virtual void update();
+    // reply proc
     inline void stall(u8 ep, usbps::EndpointDirection dir = usbps::EndpointDirection::IN_OUT){
         UsbInstance.stallEndpoint(ep, dir);
     }
     inline int ack(u8 ep){
         return sendBuffer(ep, NULL, 0);
     }
-    void intrHandler(u32 mask);
     inline usbps::EndpointBuffer receiveBuffer(u8 endpoint, bool pooling = false) {
         return UsbInstance.receiveBuffer(endpoint, pooling);
     }
@@ -85,10 +88,4 @@ public:
     inline int sendBuffer(u8 endpoint, const u8* buffer, u32 length){
         return UsbInstance.sendBuffer(endpoint, buffer, length);
     }
-    // usb midi proc
-    void epHandler(u8 endpoint_num, usbps::EndpointEvent event_type, void *data);
-
-    virtual void update();
-
-    
 };

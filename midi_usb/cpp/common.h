@@ -11,7 +11,7 @@ inline void execCriticalSection(const F& func){
 	func();
 #else
 	volatile u32 mask = mfcpsr();
-	if(mask & XIL_EXCEPTION_IRQ){//1だと無効
+	if(mask & XIL_EXCEPTION_IRQ){
 		func();
 	}else{
 		Xil_ExceptionDisable();

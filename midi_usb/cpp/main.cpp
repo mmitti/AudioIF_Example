@@ -33,14 +33,16 @@ int main()
     Xil_ExceptionEnableMask(XIL_EXCEPTION_IRQ);
 	
 	std::cout << std::endl 
-	<< "================" << std::endl 
+	<< "==============================================" << std::endl 
 	<< "mi USB Audio - Zynq USB - MIDI EXAMPLE VERSION" << std::endl 
 	<< "(c)mmitti 2017-2023" << std::endl 
 	<< "Build Date:" << __DATE__ << " " << __TIME__ << std::endl 
-	<< "==Debug Console==" << std::endl 
-	<< "================" << std::endl;
+	<< "==============================================" << std::endl;
 
 	while(true){
+        // transfer midi 
+        // + PL to PS( read from PL and send to USB buffer )
+        // + PS to PL( read ring buffer and write to PL )
 		usb_midi.update();
 	}
     return 0;

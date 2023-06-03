@@ -37,7 +37,7 @@ bool USBMidi::init()
     if (XST_SUCCESS != Status)
         return false;
 
-    // Endpoint の設定
+    // initialize endpoint
     UsbInstance.DeviceConfig.EpCfg[USB_CFG_CONTROLE_EP].Out.Type = usbps::EndpointType::CONTROL;
     UsbInstance.DeviceConfig.EpCfg[USB_CFG_CONTROLE_EP].Out.NumBufs = 2;
     UsbInstance.DeviceConfig.EpCfg[USB_CFG_CONTROLE_EP].Out.BufSize = USB_ENDPOINT0_MAXP;
@@ -54,18 +54,18 @@ bool USBMidi::init()
 	UsbInstance.DeviceConfig.EpCfg[USB_CFG_MIDI_STREAM_EP].In.NumBufs = 128;
 	UsbInstance.DeviceConfig.EpCfg[USB_CFG_MIDI_STREAM_EP].In.MaxPacketSize = USB_MIDI_ENDPOINT_MAXP;
 
-    UsbInstance.DeviceConfig.NumEndpoints = 4;
+    UsbInstance.DeviceConfig.NumEndpoints = 4; // sets the max index of endpoint
 
     Status = UsbInstance.setupDevice((u8 *)&Buffer[0], MEMORY_SIZE);
     if (XST_SUCCESS != Status)
         return false;
 
-    // 割り込み登録
+    // register interrups
     UsbInstance.setInterrupt(UsbIntrHandler, this, XUSBPS_IXR_SR_MASK);
     UsbInstance.setEndpointHandler(0, usbps::EndpointDirection::OUT, Ep0EventHandler, this);
     UsbInstance.setEndpointHandler(3, usbps::EndpointDirection::IN_OUT, EpEventHandler, this);
-    // 割り込み有効
-    UsbInstance.enableInterrupt(XUSBPS_IXR_SR_MASK); // XUSBPS_IXR_UR_MASK | XUSBPS_IXR_UI_MASK
+    // enable interrups
+    UsbInstance.enableInterrupt(XUSBPS_IXR_SR_MASK);
     // Start the USB engine
     UsbInstance.start();
     DPRINT("start");
@@ -77,8 +77,6 @@ void USBMidi::release()
     UsbInstance.stop();
     UsbInstance.disableInterrupt(XUSBPS_IXR_ALL);
     UsbInstance.setInterrupt(NULL, NULL, 0);
-    
-    /* Disconnect and disable the interrupt for the USB controller. */
     XScuGic_Disconnect(&IntcInstance, XPAR_XUSBPS_0_INTR);
 }
 
@@ -102,8 +100,7 @@ void USBMidi::ep0Handler(u8 endpoint_num, usbps::EndpointEvent event_type, void 
             break;
         }
 
-        // Setupパケットの処理をする
-        // DPRINT("Handle setup packet\n");
+        // handle setup packet
         switch (SetupData.getType())
         {
         case usbps::SetupType::STANDARD:
@@ -116,7 +113,6 @@ void USBMidi::ep0Handler(u8 endpoint_num, usbps::EndpointEvent event_type, void 
                 constexpr u32 EpNum = 0;
                 if(!UsbInstance.primeEndpoint(EpNum, usbps::EndpointDirection::OUT, true))
                     return;
-                /* Get the Setup DATA, don't wait for the interrupt */
                 auto buffer = receiveBuffer(EpNum, true);
                 if (buffer.status == XST_SUCCESS)
                 {
@@ -130,7 +126,6 @@ void USBMidi::ep0Handler(u8 endpoint_num, usbps::EndpointEvent event_type, void 
         }
         break;
         default:
-            /* Stall on Endpoint 0 */
             DPRINT("unknown class req, stall 0 in out\n");
             stall(0);
             break;
@@ -138,7 +133,7 @@ void USBMidi::ep0Handler(u8 endpoint_num, usbps::EndpointEvent event_type, void 
 
         break;
 
-    // Controlエンドポイントに来たデータは破棄する
+    // ignore data to EP0
     case usbps::EndpointEvent::DATA_RX:
     {
         auto buffer = receiveBuffer(endpoint_num);
@@ -184,6 +179,7 @@ void USBMidi::stdDeviceRequest(usbps::SetupData &data)
         return;
     DPRINT("std dev req R:%d I:%d V:%d \n", data.bRequest, data.wIndex, data.wValue);
 
+    // handle device request
     switch (data.bRequest)
     {
     case XUSBPS_REQ_GET_STATUS:
@@ -231,7 +227,6 @@ void USBMidi::stdDeviceRequest(usbps::SetupData &data)
         break;
 
     case XUSBPS_REQ_GET_INTERFACE:
-        // index: i/f
         DPRINT("Get interface %d/%d/%d\n", data.wIndex, data.wLength, UsbInstance.getCurrentAltSetting());
         {
             int alt = -1;
@@ -241,14 +236,13 @@ void USBMidi::stdDeviceRequest(usbps::SetupData &data)
                 Error = true;
                 break;
             }
-            Response = (u8)alt; // interface alt id
-            /* Ack the host */
+            Response = (u8)alt; 
             sendBuffer(0, &Response, 1);
         }
         break;
 
     case XUSBPS_REQ_GET_DESCRIPTOR:
-        /* Get descriptor type. */
+        // reply descriptors
         switch ((data.wValue >> 8) & 0xff)
         {
         case XUSBPS_TYPE_DEVICE_DESC:
@@ -302,16 +296,15 @@ void USBMidi::stdDeviceRequest(usbps::SetupData &data)
         break;
 
     case XUSBPS_REQ_SET_CONFIGURATION:
-        // Configrationは1のみ受付
+        // activate configuration (only support config=1)
         if ((data.wValue & 0xff) != 1)
         {
             Error = true;
             break;
         }
-        // Endpoint 有効化
-        UsbInstance.enableEndpoint(3, usbps::EndpointDirection::IN_OUT);
-        /* Prime the OUT endpoint. */
-        UsbInstance.primeEndpoint(3, usbps::EndpointDirection::OUT);
+        // enable endppioint
+        UsbInstance.enableEndpoint(USB_CFG_MIDI_STREAM_EP, usbps::EndpointDirection::IN_OUT);
+        UsbInstance.primeEndpoint(USB_CFG_MIDI_STREAM_EP, usbps::EndpointDirection::OUT);
         ack(0);
         break;
 
@@ -369,7 +362,7 @@ void USBMidi::stdDeviceRequest(usbps::SetupData &data)
         break;
 
     case XUSBPS_REQ_SET_INTERFACE:
-        // index : i/f value:alt id
+        // set interface (only support 0 interface)
         DPRINT("set interface %d/%d\n", data.wValue, data.wIndex);
         {
             if (data.wIndex == USB_INTERFACE_MIDISTREAM && data.wValue == 0) ack(0);
@@ -392,7 +385,7 @@ void USBMidi::stdDeviceRequest(usbps::SetupData &data)
 
 void USBMidi::update()
 {
-    // receive midi message from PL
+    // receive midi message from PL and send
     while(this->midi_ph.arrivedMidiMessage(1)){ 
 		auto d = this->midi_ph.readMidiMessage(1);
 		if(MIDIPeripheral::checkValidMidiMessage(d)){
@@ -402,11 +395,14 @@ void USBMidi::update()
                 // note on or note off
                 u8 cable_num = 0;
                 // cable num, channel message type
-                inbuffer.writeByte(cable_num << 4 | head >> 4);
+                u8 buf[4];
+                buf[0] = cable_num << 4 | head >> 4;
                 // raw midi data
-                inbuffer.writeByte(head);
-                inbuffer.writeByte(MIDIPeripheral::getMidiMessageData1(d));
-                inbuffer.writeByte(MIDIPeripheral::getMidiMessageData2(d));
+                buf[1] = head;
+                buf[2] = MIDIPeripheral::getMidiMessageData1(d);
+                buf[3] = MIDIPeripheral::getMidiMessageData2(d);
+                auto status = this->sendBuffer(USB_CFG_MIDI_STREAM_EP, buf, 4);
+                if (status != XST_SUCCESS) DPRINT("W: TX FAILED %d\n", status);
             }
 		}
 	}
@@ -438,16 +434,6 @@ void USBMidi::update()
                 break;
 		}
 	}
-
-    
-    // enqueue midi send buffer to USB
-    u8 obuf[64];
-    unsigned len = std::min( ((inbuffer.getLength()) >> 2) << 2, (u32)64);
-    if(len > 0)  {
-        inbuffer.readBuffer(obuf, len);
-        auto status = this->sendBuffer(USB_CFG_MIDI_STREAM_EP, obuf, len);
-        if (status != XST_SUCCESS) DPRINT("W: TX FAILED %d\n", status);
-    }
 
 }
 

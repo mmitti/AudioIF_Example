@@ -2,7 +2,7 @@
 
 Xilinx製FPAG開発環境VivadoとXilinx製ARM開発環境Vitisで動作するサンプルです。
 
-TODO
+PL上に構築したMIDI送信IP(Bus2MIDI)とMIDI受信IP(MIDI2Bus)、MIDI-AXI変換IP(Midi)を用いて入力されたMidi信号をCPUへ転送し、CPUで一定時間のディレイを与えてMIDIを出力するサンプルです。
 
 なお、この使い方はVivadoの使い方に慣れている方向けの説明となります。  
 Vivadoの使い方に関しては[FPGAプログラミング大全 Xilinx編](https://www.amazon.co.jp/dp/4798063266)などを参考にしてください。

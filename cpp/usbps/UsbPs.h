@@ -27,8 +27,6 @@ namespace usbps
         friend void Interrupt::IntrHandleRX(UsbPs*, u32);
     private:
         // === XUsbPs_Config ===
-        // Unique ID of controller.
-        u16 DeviceID;
         // Core register base address.
         u32 BaseAddress;
         // =====================
@@ -55,7 +53,7 @@ namespace usbps
     public:
         ::usbps::DeviceConfig DeviceConfig;
         // Initializer
-        UsbPs(u16 deviceId, u32 baseAddr);
+        UsbPs(u32 baseAddr);
         int init(XScuGic *InterruptPtr, u32 Int_Id);
         int setupDevice(u8* DMAMemory, u32 DMAMemorySize);
         

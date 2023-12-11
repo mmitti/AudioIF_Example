@@ -6,18 +6,14 @@
 #include <sstream>
 using namespace std;
 
-#define XPAR_PS7_USB_0_DEVICE_ID 0
-#define XPAR_PS7_USB_0_BASEADDR 0xE0002000
-
-
 XScuGic interrupt;
-MIDIPeripheral midi_ph(XPAR_MIDI_BASEADDR);
-USBMidi usb_midi(interrupt, midi_ph, XPAR_PS7_USB_0_DEVICE_ID, XPAR_PS7_USB_0_BASEADDR);
+MIDIPeripheral midi_ph(XPAR_MIDI_0_BASEADDR);
+USBMidi usb_midi(interrupt, midi_ph, XPAR_USB0_BASEADDR);
 
 int main()
 {
     // initialize interrupt handler
-    auto IntcConfig = XScuGic_LookupConfig(XPAR_SCUGIC_SINGLE_DEVICE_ID);
+    auto IntcConfig = XScuGic_LookupConfig(XPAR_SCUGIC_DIST_BASEADDR);
     if (NULL == IntcConfig) while(1){};
     auto Status = XScuGic_CfgInitialize(&interrupt, IntcConfig, IntcConfig->CpuBaseAddress);
     if (Status != XST_SUCCESS) while(1){};

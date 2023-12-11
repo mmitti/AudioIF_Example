@@ -48,17 +48,17 @@ struct Event {
 
 int main() {
 	// initialize midi driver with MIDI's AXI base address(refer BlockDesign>Address Assign)
-	MIDIPeripheral midi(XPAR_MIDI_0_S_AXI_BASEADDR);
+	MIDIPeripheral midi(XPAR_MIDI_0_BASEADDR);
 	// initialize interuppt 
 	XScuGic_Config *interrupt_config;
 	XScuGic interrupt;
-	interrupt_config = XScuGic_LookupConfig(XPAR_SCUGIC_SINGLE_DEVICE_ID);
+	interrupt_config = XScuGic_LookupConfig(XPAR_SCUGIC_DIST_BASEADDR);
 	XScuGic_CfgInitialize(&interrupt, interrupt_config,
 					interrupt_config->CpuBaseAddress);
 	// intiialize timer
 	XScuTimer_Config *timer_config;
 	XScuTimer timer;
-	timer_config = XScuTimer_LookupConfig(XPAR_XSCUTIMER_0_DEVICE_ID);
+	timer_config = XScuTimer_LookupConfig(XPAR_SCUTIMER_BASEADDR);
 	XScuTimer_CfgInitialize(&timer, timer_config,
 					timer_config->BaseAddr);
 	XScuTimer_EnableAutoReload(&timer);

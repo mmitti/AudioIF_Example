@@ -1,4 +1,5 @@
 #include <xscugic.h>
+#include <xparameters.h>
 #include "usb_midi.h"
 #include <MIDIPeripheral.h>
 #include <iostream>

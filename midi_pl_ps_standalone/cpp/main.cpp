@@ -77,7 +77,7 @@ int main() {
 	Xil_ExceptionEnable();
 
 	// set timer interbal depend on tempo
-	float timer_count_per_us = 1.0 * 1000 * 1000 / (XPAR_PS7_CORTEXA9_0_CPU_CLK_FREQ_HZ / 2); // 0.003us/count @ CPU clock=650MHz
+	float timer_count_per_us = 1.0 * 1000 * 1000 / (XPAR_CPU_CORE_CLOCK_FREQ_HZ / 2); // 0.003us/count @ CPU clock=650MHz
 	float tick_per_us = 1.0 * delay_time_us_per_tick_without_tempo / tempo; // 4116us/tick @ tempo=120
 	int count = tick_per_us / timer_count_per_us; // timer count/tick
 	XScuTimer_LoadTimer(&timer, count);

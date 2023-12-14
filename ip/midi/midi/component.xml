@@ -1400,6 +1400,11 @@
     <spirit:fileSet>
       <spirit:name>xilinx_softwaredriver_view_fileset</spirit:name>
       <spirit:file>
+        <spirit:name>drivers/MIDI_v1_0/data/MIDI.mdd</spirit:name>
+        <spirit:userFileType>mdd</spirit:userFileType>
+        <spirit:userFileType>driver_mdd</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
         <spirit:name>drivers/MIDI_v1_0/data/MIDI.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
         <spirit:userFileType>driver_tcl</spirit:userFileType>
@@ -1422,8 +1427,16 @@
         <spirit:fileType>cSource</spirit:fileType>
       </spirit:file>
       <spirit:file>
-        <spirit:name>drivers/MIDI_v1_0/data/MIDI.mdd</spirit:name>
-        <spirit:userFileType>mdd</spirit:userFileType>
+        <spirit:name>drivers/MIDI_v1_0/src/xmidi.h</spirit:name>
+        <spirit:fileType>cSource</spirit:fileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>drivers/MIDI_v1_0/src/CMakeLists.txt</spirit:name>
+        <spirit:userFileType>text</spirit:userFileType>
+      </spirit:file>
+      <spirit:file>
+        <spirit:name>drivers/MIDI_v1_0/data/MIDI.yaml</spirit:name>
+        <spirit:fileType>unknown</spirit:fileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -1442,7 +1455,7 @@
         <spirit:fileType>tclSource</spirit:fileType>
       </spirit:file>
     </spirit:fileSet>
-    <spirit:fileSet>
+        <spirit:fileSet>
       <spirit:name>xilinx_utilityxitfiles_view_fileset</spirit:name>
       <spirit:file>
         <spirit:name>midi_bus.png</spirit:name>
@@ -1522,11 +1535,11 @@
         <xilinx:xpmLibrary>XPM_CDC</xilinx:xpmLibrary>
         <xilinx:xpmLibrary>XPM_MEMORY</xilinx:xpmLibrary>
       </xilinx:xpmLibraries>
-      <xilinx:coreRevision>23</xilinx:coreRevision>
+      <xilinx:coreRevision>24</xilinx:coreRevision>
       <xilinx:upgrades>
         <xilinx:canUpgradeFrom>xilinx.com:user:MIDI:1.0</xilinx:canUpgradeFrom>
       </xilinx:upgrades>
-      <xilinx:coreCreationDateTime>2023-11-22T16:07:35Z</xilinx:coreCreationDateTime>
+      <xilinx:coreCreationDateTime>2023-12-03T14:12:25Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="xilinx.com:user:MIDI:1.0_ARCHIVE_LOCATION">d:/mmitti/Git/Zynq/Midi/MIDI_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@625dc8e3_ARCHIVE_LOCATION">d:/mmitti/Git/Zynq/Midi/MIDI_1.0</xilinx:tag>

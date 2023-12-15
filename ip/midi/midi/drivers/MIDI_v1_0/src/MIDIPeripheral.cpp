@@ -2,14 +2,22 @@
 
 /***************************** Include Files *******************************/
 #include "MIDIPeripheral.h"
+#include "xmidi.h"
 #include <xil_io.h>
 /************************** Function Definitions ***************************/
 #define MIDI_WriteReg(BaseAddress, RegOffset, Data)  Xil_Out32((BaseAddress) + (RegOffset), (u32)(Data))
 #define MIDI_ReadReg(BaseAddress, RegOffset)   Xil_In32((BaseAddress) + (RegOffset))
 
+extern XMIDI_Config XMIDI_ConfigTable[];
+
 MIDIPeripheral::MIDIPeripheral(u32 base)
 {
-	baseAddress = base;
+	for (int i = 0; XMIDI_ConfigTable[i].Name != NULL; i++) {
+        if ((XMIDI_ConfigTable[i].BaseAddress == base) || !base) {
+            this->baseAddress = XMIDI_ConfigTable[i].BaseAddress;
+           	break;
+       }
+    }
 }
 
 bool MIDIPeripheral::arrivedMidiMessage(u8 cn)

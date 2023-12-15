@@ -62,7 +62,7 @@ protected:
     void classRequest(usbps::SetupData& data, u8* in_data);
 public:
 
-    USBMidi(XScuGic& intc, MIDIPeripheral &midi_ph, u16 deviceId, u32 baseAddr);
+    USBMidi(XScuGic& intc, MIDIPeripheral &midi_ph, u32 baseAddr);
     virtual ~USBMidi(){};
     // generic usb proc
     virtual bool init();

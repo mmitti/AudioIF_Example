@@ -26,7 +26,7 @@ namespace
     }
 } // namespace
 
-USBMidi::USBMidi(XScuGic &intc, MIDIPeripheral &midi_ph, u16 deviceId, u32 baseAddr) : IntcInstance(intc), midi_ph(midi_ph), UsbInstance(deviceId, baseAddr){};
+USBMidi::USBMidi(XScuGic &intc, MIDIPeripheral &midi_ph, u32 baseAddr) : IntcInstance(intc), midi_ph(midi_ph), UsbInstance(baseAddr){};
 
 bool USBMidi::init()
 {

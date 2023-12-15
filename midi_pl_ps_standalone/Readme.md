@@ -43,7 +43,7 @@ Vivadoの使い方に関しては[FPGAプログラミング大全 Xilinx編](htt
 
 1. Block Diagramが表示され、図のようなブロックデザインが生成されているかを確認します
 
-TODO
+
 ![](img/01.png)
 
 1. Block DiagramのZynq7 Processing Systemをダブルクリック
@@ -79,7 +79,7 @@ TODO
 1. I/O Portsタブを開き、各入出力ピンのPackage PinのとI/O Stdを設定します  
 なお、PS関係のピンの設定(DDR_XXXやFIXED_IO_XXXなど)はデフォルトのまま間としてください。  
 例の場合は図のように設定します
-![](img/02.png) TODO
+![](img/02.png) 
 
 1. Ctrl+Sを押して保存します。Save Constraintsダイアログが表示されるため、File nameに適当な名前を入力してOKを選択します。
 
@@ -100,52 +100,50 @@ TODO
 
 1. VivadoのToolsからLaunch Vitis IDEを選択します
 
-1. Vitis IDE Launcherダイアログが表示されるため、Workspaceにsdkフォルダーを指定しLaunchを選択
+1. Vitis Unified IDEが起動時、Welcomeページが表示されるので Open Workspaceを選択し、sdkフォルダーを指定しフォルダーの選択を選択
 
-1. Create Appliaction Porojectを選択
+1. Embedded DevelopmentのCreate Platform Componentを選択
 
-1. New Application Projectダイアログが表示されるためNextを選択
+1. Create Platform Componentダイアログが表示されるので、Platform名に任意の名前を入力しNextを選択
 
-1. Create a new plaform fron hardware(XSA)タブを選択、BrowseをクリックしてVivadoで生成したxsaファイルを選択
+1. Hardware Design(XSA)のBrowseをクリックしてVivadoで生成したxsaファイルを選択しNextを選択
 
-1. New Application ProjectダイアログのNextを選択
+1. Select Operationg System and Processorの画面が読み込まれた後Operating systemがstandaloneになっていることを確認しNextを選択
 
-1. Application project nameにMainと入力しNextを選択
+1. Summary画面を確認してNextを選択
 
-1. Domein画面はNextを選択
+1. Platformプロジェクト完成後Welcome ページを再度開き、Embedded DevelopmentのCreate Embedded Applicationを選択
 
-1. TemplatesはEmpty Application(C++)を選択しFinishを選択
+1. Create Application Componentダイアログが表示されるので、Component名に任意の名前を入力しNextを選択
 
-## C++コード追加とプロジェクト設定
+1. Select Platform画面で先ほど作成したPlatformを選択してNextを選択
 
-1. ExplorerのMain_systemのMainのsrcを右クリックし、Import sourcesを選択
+1. Select Domain画面で内容を確認してNextを選択
 
-1. from directoryの Browseをクリックしcppフォルダーを選択
+1. Summary画面を確認してNextを選択
 
-1. lscript.ldとmain.cppをチェックしFinishを選択
+## C++コード追加
 
-1. 上書きするかと聞かれる場合はYes to allを選択
+1. VITIS COMPONENTSのSDK>Application>Sourcesのsrcを右クリックし、ImpoerからFilesを選択
 
-1. ExplorerのMain_systemのMainを右クリックし、Propertyを選択
-
-1. Properties for MainダイアログのC/C++ BuildからSettingsを選択し、ToolSettingsタブのARM v7 g++ compilerからMiscellaneousを選択し、Other flagsに-std=c++14を追加します
-
-1. Apply and Closeを選択しダイアログを閉じます
-
+1. cppフォルダー内のlscript.ldとmain.cppを選択し開くを選択
 
 ## C++プログラムのビルド
 
-1. AssisntantのMain_systemのDebugを右クリックしBuildを選択します
+1. VITIS COMPONENTSのFLOWのComponentからPlatformを選択しBuildを選択
+
+1. Platformビルド完了後、VITIS COMPONENTSのFLOWのComponentからApplicationを選択しBuildを選択
+
 
 ## 実行設定作成
 
-1. ツールバーのRunのドロップダウンを選択し、Run Configurationを選択
+1. VITIS COMPONENTSのFLOWのComponentからPlatformを選択しRunにマウスカーソルを乗せ、設定ボタンをクリック
 
-1. Run ConfigurationダイアログのSingle Application DebugをダブルクリックしCloseを選択します
+1. Initialization fileがxxx[Platform]/platform/hw/ps7_init.tclとなっていることを確認する。もし、そのほかのtclが選択されている場合、Browseを選択し、作成したPlatformの保存先/platform/hw/ps7_init.tclを選択する
 
 ## 実行
 
 1. シリアル通信が可能なターミナルを起動し、FPGAのUARTに接続します。  
 デフォルトでのボーレートは115200です。
 
-1. ツールバーのRunをクリックし実行します。 この際PLのコンフィギュレーションとPSの初期化・起動が行なわれます。
+1. VITIS COMPONENTSのFLOWのComponentからPlatformを選択しRunをクリックし実行します。 この際PLのコンフィギュレーションとPSの初期化・起動が行なわれます。

@@ -244,10 +244,9 @@ namespace usbps
 
 #pragma endregion
 #pragma region initialize
-    UsbPs::UsbPs(u16 deviceId, u32 baseAddr)
+    UsbPs::UsbPs(u32 baseAddr)
     {
         // from xusbps_g.c, xusbps_sinit.c XUsbPs_LookupConfig()
-        this->DeviceID = deviceId;
         this->BaseAddress = baseAddr;
     }
 

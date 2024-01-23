@@ -48,17 +48,17 @@ struct Event {
 
 int main() {
 	// initialize midi driver with MIDI's AXI base address(refer BlockDesign>Address Assign)
-	MIDIPeripheral midi(XPAR_MIDI_0_S_AXI_BASEADDR);
+	MIDIPeripheral midi(XPAR_MIDI_0_BASEADDR);
 	// initialize interuppt 
 	XScuGic_Config *interrupt_config;
 	XScuGic interrupt;
-	interrupt_config = XScuGic_LookupConfig(XPAR_SCUGIC_SINGLE_DEVICE_ID);
+	interrupt_config = XScuGic_LookupConfig(XPAR_SCUGIC_DIST_BASEADDR);
 	XScuGic_CfgInitialize(&interrupt, interrupt_config,
 					interrupt_config->CpuBaseAddress);
 	// intiialize timer
 	XScuTimer_Config *timer_config;
 	XScuTimer timer;
-	timer_config = XScuTimer_LookupConfig(XPAR_XSCUTIMER_0_DEVICE_ID);
+	timer_config = XScuTimer_LookupConfig(XPAR_SCUTIMER_BASEADDR);
 	XScuTimer_CfgInitialize(&timer, timer_config,
 					timer_config->BaseAddr);
 	XScuTimer_EnableAutoReload(&timer);
@@ -77,7 +77,7 @@ int main() {
 	Xil_ExceptionEnable();
 
 	// set timer interbal depend on tempo
-	float timer_count_per_us = 1.0 * 1000 * 1000 / (XPAR_PS7_CORTEXA9_0_CPU_CLK_FREQ_HZ / 2); // 0.003us/count @ CPU clock=650MHz
+	float timer_count_per_us = 1.0 * 1000 * 1000 / (XPAR_CPU_CORE_CLOCK_FREQ_HZ / 2); // 0.003us/count @ CPU clock=650MHz
 	float tick_per_us = 1.0 * delay_time_us_per_tick_without_tempo / tempo; // 4116us/tick @ tempo=120
 	int count = tick_per_us / timer_count_per_us; // timer count/tick
 	XScuTimer_LoadTimer(&timer, count);

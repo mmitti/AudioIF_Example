@@ -1,0 +1,18 @@
+#pragma once
+// Reg offset
+#define SWPD_S_AXI_CONTROL_OFFSET (0x0)
+#define SWPD_S_AXI_SEND_OFFSET (0x4)
+#define SWPD_S_AXI_RECEIVE_OFFSET (0x8)
+// Reg Control Register
+#define SWPD_CONTROL_ENABLE_MASK (1)
+#define SWPD_CONTROL_RUNNING_MASK (1<<1)
+#define SWPD_CONTROL_DONE_MASK (1<<2)
+#define SWPD_CONTROL_TRANSFER_ERROR_MASK (1<<3)
+// Reg Send Register
+#define SWPD_SEND_LENGTH_MASK (0x00000003)
+#define SWPD_SEND_LENGTH_SHIFT (0)
+#define SWPD_SEND_COMMAND_MASK (0x0000FF00)
+#define SWPD_SEND_COMMAND_SHIFT (8)
+// Reg Receive Register
+#define SWPD_RECEIVE_REPLY_MASK (0x00003FFF)
+#define SWPD_RECEIVE_REPLY_SHIFT (0)
